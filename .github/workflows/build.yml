@@ -11,7 +11,7 @@ jobs:
     name: fedora
     runs-on: ubuntu-latest
     container:
-      image: fedora:41
+      image: fedora:43
 
     steps:
     - uses: actions/checkout@v4
@@ -19,14 +19,16 @@ jobs:
     - name: install dependencies
       run: |
        dnf -y install alsa-lib-devel ant autoconf automake bc curl gambit-c
-       dnf -y install gcc git ImageMagick-devel java-17-openjdk-devel
+       dnf -y install gcc-14 git grep ImageMagick-devel java-25-openjdk-devel
        dnf -y install libtool libXext-devel make mesa-libGL-devel
        dnf -y install mesa-libGLU-devel netpbm-devel patch perl-FindBin
        dnf -y install portaudio python3-sdkmanager sed tar tcl-devel texlive
-       dnf -y install wget zip
+       dnf -y install which wget zip
     - name: Get LambdaNative
       run: |
        git clone https://github.com/part-cw/lambdanative
+       cd lambdanative
+       git checkout b6e82ee343d8ea3c95e277d7e122baae9a5dc096
     - name: setup android
       run: |
        # https://stackoverflow.com/a/77215395
@@ -52,6 +54,9 @@ jobs:
        sed -i 's|/usr/local/android-ndk-*|/home/build/android-sdk/ndk-bundle|g' SETUP
        cp PROFILE.template PROFILE
        sed -i 's|SYS_ANDROIDPW="yoursecrethere"|SYS_ANDROIDPW="android"|g' PROFILE
+       sed -i 's|SYS_CC="gcc $SYS|SYS_CC="gcc-14 $SYS|g' targets/linux/host_linux
+       sed -i 's|SYS_CXX="g++ $SYS|SYS_CXX="g++-13 $SYS|g' targets/linux/host_linux
+       sed -i 's|gcc -Werror|gcc-14 -Werror|g' targets/linux/check-libraries
     - name: copy source
       run: |
        cp -r GPS_Logger lambdanative/apps
