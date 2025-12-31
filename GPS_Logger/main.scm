@@ -10,9 +10,7 @@
        (number? lat)
        (number? lng)
        (not (eq? lat #f))
-       (not (eq? lng #f))
-       (> lat 0)
-       (> lng 0)))
+       (not (eq? lng #f))))
 
 
 ;; CSV logging
